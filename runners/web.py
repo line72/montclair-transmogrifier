@@ -4,6 +4,7 @@ import os
 import json
 import re
 import shutil
+import subprocess
 
 class Web:
     def __init__(self, config):
@@ -128,7 +129,19 @@ class Web:
         shutil.copy(self.config.montclair_config.configuration_js_file, self.base_path('src/Configuration.js'))
 
     def update_icons(self):
-        pass
+        # convert the logo.svg into a 512x512 png
+        subprocess.run(['convert', self.config.logo_svg,
+                        '-resize', '512x512',
+                        self.base_path('public/app_icon.png')],
+                       check = True)
+
+        # convert the logo.svg into a favicon.ico with multiple resolutions
+        subprocess.run(['convert', self.config.logo_svg,
+                        '-alpha', 'off',
+                        '-resize', '256x256',
+                        '-define', 'icon:auto-resize=256,192,152,144,128,96,72,64,48,32,24,16',
+                        self.base_path('public/favicon.ico')],
+                       check = True)
 
     def base_path(self, fname):
         return os.path.join(self.config.build_dir, f'montclair-{self.config.repo}', fname)
