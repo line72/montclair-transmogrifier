@@ -132,7 +132,7 @@ class Web:
         # convert the logo.svg into a 512x512 png
         subprocess.run(['convert', self.config.logo_svg,
                         '-resize', '512x512',
-                        self.base_path('public/app_icon.png')],
+                        self.base_path('public/app-icon.png')],
                        check = True)
 
         # convert the logo.svg into a favicon.ico with multiple resolutions

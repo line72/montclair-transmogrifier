@@ -2,17 +2,20 @@ import sys
 import argparse
 
 from transmogrifier.runners.web import Web
+from transmogrifier.runners.ios import IOS
 
 class Runner:
     def __init__(self, config):
         self.config = config
         self.web = Web(config)
+        self.ios = IOS(config)
 
     def go(self):
         self.parse_args()
         
         print('running')
         self.web.go()
+        self.ios.go()
         
 
     def parse_args(self):
