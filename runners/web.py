@@ -1,7 +1,9 @@
 # -*- mode: python -*-
+import sys
 import os
 import json
 import re
+import shutil
 
 class Web:
     def __init__(self, config):
@@ -12,6 +14,11 @@ class Web:
         self.update_package_json()
         self.update_manifest()
         self.update_index()
+        self.update_first_run()
+        self.update_agency_list()
+        self.update_route_container()
+        self.update_config()
+        self.update_icons()
 
     def update_readme(self):
         with self.o('README.md', 'w') as f:
@@ -21,7 +28,7 @@ class Web:
     
     def update_package_json(self):
         # update the package.json and the package-lock.json
-        package = json.loads(self.o('package.json').read())
+        package = json.loads(self.oread('package.json'))
         # replace the name
         package['name'] = self.config.package_name
         
@@ -29,7 +36,7 @@ class Web:
             f.write(json.dumps(package, indent = 2))
             f.write('\n')
 
-        package_lock = json.loads(self.o('package-lock.json').read())
+        package_lock = json.loads(self.oread('package-lock.json'))
         # replace the name
         package_lock['name'] = self.config.package_name
         
@@ -39,7 +46,7 @@ class Web:
 
     def update_manifest(self):
         # update the public/manifest.json
-        manifest = json.loads(self.o('public/manifest.json').read())
+        manifest = json.loads(self.oread('public/manifest.json'))
 
         manifest['short_name'] = self.config.name
         manifest['name'] = self.config.name
@@ -65,7 +72,7 @@ class Web:
     def update_index(self):
         # replace the apple-itunes-app in the meta
         # replace the title
-        index = self.o('public/index.html').readlines()
+        index = self.oreadlines('public/index.html')
         with self.o('public/index.html', 'w') as f:
             for line in index:
                 if 'apple-itunes-app' in line:
@@ -74,27 +81,65 @@ class Web:
                     if matches:
                         f.write(f'{matches.group(1)}{self.config.ios_config.app_store_id}{matches.group(2)}\n')
                     else:
-                        print(sys.stderr, 'Runner.Web: Unable to match apple-itunes-app in public/index.html')
+                        raise Exception('Runner.Web: Unable to match apple-itunes-app in public/index.html')
                 elif '<title>Montclair</title>' in line:
                     f.write(line.replace('Montclair', self.config.montclair_config.title or self.config.name))
                 else:
                     f.write(line)
 
     def update_first_run(self):
-        # Update src/FirstRun.js
-        pass
+        # Update src/FirstRunHint.js
+        #!mwd - It would be nice if this was a variable...
+
+        first_run = self.oread('src/FirstRunHint.js')
+
+        r = re.compile('^(.*<div className="FirstRunHint.*)Welcome to Birmingham.*?(</div>.*)$', re.MULTILINE | re.DOTALL)
+        match = r.match(first_run)
+        if match:
+            with self.o('src/FirstRunHint.js', 'w') as f:
+                f.write(f'{match.group(1)}{self.config.montclair_config.first_run_text}{match.group(2)}')
+        else:
+            raise Exception('Runner.Web: Unable to match src/FirstRunHint.js')
 
     def update_agency_list(self):
-        # Update src/AgencyList.js
-        pass
+        # Update src/AgencyList.js and replace Birmingham Transit header
+        agencies = self.oreadlines('src/AgencyList.js')
+
+        with self.o('src/AgencyList.js', 'w') as f:
+            for line in agencies:
+                if 'Birmingham Transit' in line:
+                    f.write(line.replace('Birmingham Transit', self.config.montclair_config.title or self.config.name))
+                else:
+                    f.write(line)
 
     def update_route_container(self):
-        # Update src/RouteContainer.js
-        pass
+        # Update src/RouteContainer.js and replace Birmingham Transit header
+        route = self.oreadlines('src/RouteContainer.js')
+
+        with self.o('src/RouteContainer.js', 'w') as f:
+            for line in route:
+                if 'Birmingham Transit' in line:
+                    f.write(line.replace('Birmingham Transit', self.config.montclair_config.title or self.config.name))
+                else:
+                    f.write(line)
     
     def update_config(self):
         # replace the src/Config.js
+        shutil.copy(self.config.montclair_config.configuration_js_file, self.base_path('src/Configuration.js'))
+
+    def update_icons(self):
         pass
 
+    def base_path(self, fname):
+        return os.path.join(self.config.build_dir, f'montclair-{self.config.repo}', fname)
+
     def o(self, fname, mode = 'r'):
-        return open(os.path.join(self.config.build_dir, f'montclair-{self.config.repo}', fname), mode)
+        return open(self.base_path(fname), mode)
+
+    def oread(self, fname):
+        with self.o(fname) as f:
+            return f.read()
+
+    def oreadlines(self, fname):
+        with self.o(fname) as f:
+            return f.readlines()
