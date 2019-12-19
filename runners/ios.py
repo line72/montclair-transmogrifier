@@ -21,48 +21,47 @@ class IOS:
         self.update_manifest()
         self.update_ios_json()
         self.update_index()
-        self.update_config_xml2()
-        self.update_ios_json2()
         self.update_generation_info()
         self.create_icons()
-        self.create_splay_screen()
+        self.create_splash_screen()
 
     def update_project_pbx(self):
         # update platforms/ios/Montclair.xcodeproj/project.pbxproj
         pass
 
     def update_config_xml(self):
-        # update platforms/ios/Montclair/config.xml
-        tree = ET.parse(self.base_path('platforms/ios/Montclair/config.xml'))
-        root = tree.getroot()
+        # update config.xml and platforms/ios/Montclair/config.xml
+        for i in ('config.xml', 'platforms/ios/Montclair/config.xml'):
+            tree = ET.parse(self.base_path(i))
+            root = tree.getroot()
         
-        # register the namespace
-        # See: https://stackoverflow.com/questions/3895951/create-svg-xml-document-without-ns0-namespace-using-python-elementtree
-        ns = 'http://www.w3.org/ns/widgets'
-        ET.register_namespace('', ns)
-        ET.register_namespace('cdv', 'http://cordova.apache.org/ns/1.0')
-
-        # update the root id and version
-        root.set('id', self.config.ios_config.app_id)
-        root.set('version', self.config.montclair_config.version)
-        # find the name, description, and content nodes, allow-navigation and update them
-        name = root.find(f'.//{{{ns}}}name')
-        name.text = self.config.name
-
-        description = root.find(f'.//{{{ns}}}description')
-        description.text = self.config.description
-
-        content = root.find(f'.//{{{ns}}}content')
-        content.set('src', self.config.url)
-
-        nav = root.find(f'.//{{{ns}}}allow-navigation')
-        nav.set('href', f'{self.config.url}/*')
-        
-        # write back out
-        tree.write(self.base_path('platforms/ios/Montclair/config.xml'),
-                   encoding='utf-8', xml_declaration = True,
-                   default_namespace = '')
-
+            # register the namespace
+            # See: https://stackoverflow.com/questions/3895951/create-svg-xml-document-without-ns0-namespace-using-python-elementtree
+            ns = 'http://www.w3.org/ns/widgets'
+            ET.register_namespace('', ns)
+            ET.register_namespace('cdv', 'http://cordova.apache.org/ns/1.0')
+            
+            # update the root id and version
+            root.set('id', self.config.ios_config.app_id)
+            root.set('version', self.config.montclair_config.version)
+            # find the name, description, and content nodes, allow-navigation and update them
+            name = root.find(f'.//{{{ns}}}name')
+            name.text = self.config.name
+            
+            description = root.find(f'.//{{{ns}}}description')
+            description.text = self.config.description
+            
+            content = root.find(f'.//{{{ns}}}content')
+            content.set('src', self.config.url)
+            
+            nav = root.find(f'.//{{{ns}}}allow-navigation')
+            nav.set('href', f'{self.config.url}/*')
+            
+            # write back out
+            tree.write(self.base_path(i),
+                       encoding='utf-8', xml_declaration = True,
+                       default_namespace = '')
+            
     def update_plist(self):
         # Update platforms/ios/Montclair/Montclair-Info.plist
 
@@ -79,8 +78,8 @@ class IOS:
             f.write(plist)
 
     def update_manifest(self):
-        # Update manifest.json AND www/manifest.json
-        for i in ('manifest.json', 'www/manifest.json'):
+        # Update manifest.json AND www/manifest.json, platforms/ios/www/manifest.json
+        for i in ('manifest.json', 'www/manifest.json', 'platforms/ios/www/manifest.json'):
             m = json.loads(self.oread(i))
             m['short_name'] = self.config.name
             m['name'] = self.config.name
@@ -106,21 +105,23 @@ class IOS:
                 f.write(r)
 
     def update_index(self):
-        pass
-
-    def update_config_xml2(self):
-        pass
-
-    def update_ios_json2(self):
-        pass
+        # Update www/index.html
+        i = self.oread('www/index.html')
+        with self.o('www/index.html', 'w') as f:
+            f.write(i.replace('Montclair', self.config.name))
 
     def update_generation_info(self):
-        pass
+        # Update generationInfo.json
+        g = json.loads(self.oread('generationInfo.json'))
+        g['generatedURL'] = f'{self.config.url}/manifest.json'
+        with self.o('generationInfo.json', 'w') as f:
+            f.write(json.dumps(g, indent = 4))
+            f.write('\n')
 
     def create_icons(self):
         pass
 
-    def create_splay_screen(self):
+    def create_splash_screen(self):
         pass
 
     def base_path(self, fname):
