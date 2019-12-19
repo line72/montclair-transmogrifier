@@ -3,6 +3,8 @@ import sys
 import os
 import io
 import xml.etree.ElementTree as ET
+import urllib.parse
+import json
 
 class IOS:
     def __init__(self, config):
@@ -62,14 +64,46 @@ class IOS:
                    default_namespace = '')
 
     def update_plist(self):
-        pass
+        # Update platforms/ios/Montclair/Montclair-Info.plist
+
+        url = urllib.parse.urlparse(self.config.url).netloc
+        
+        plist = self.oread('platforms/ios/Montclair/Montclair-Info.plist')
+        plist = plist.replace(
+            'net.line72.montclair', self.config.ios_config.app_id
+        ).replace(
+            'montclair.line72.net', url
+        )
+
+        with self.o('platforms/ios/Montclair/Montclair-Info.plist', 'w') as f:
+            f.write(plist)
 
     def update_manifest(self):
         # Update manifest.json AND www/manifest.json
-        pass
+        for i in ('manifest.json', 'www/manifest.json'):
+            m = json.loads(self.oread(i))
+            m['short_name'] = self.config.name
+            m['name'] = self.config.name
+            m['description'] = self.config.description
+            m['start_url'] = self.config.url + '/index.html'
+
+            # fix all the icons
+            for icon in m['icons']:
+                url = urllib.parse.urlparse(icon['src'])
+                icon['src'] = f'{self.config.url}{url.path}'
+            
+            with self.o(i, 'w') as f:
+                f.write(json.dumps(m, indent = 4))
+                f.write('\n')
 
     def update_ios_json(self):
-        pass
+        # update platforms/ios/ios.json and plugins/ios.json
+        for i in ('platforms/ios/ios.json', 'plugins/ios.json'):
+            r = self.oread(i)
+            r = r.replace('net.line72.montclair', self.config.ios_config.app_id)
+
+            with self.o(i, 'w') as f:
+                f.write(r)
 
     def update_index(self):
         pass
