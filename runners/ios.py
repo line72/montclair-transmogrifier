@@ -1,7 +1,6 @@
 # -*- mode: python -*-
 import sys
 import os
-import io
 import subprocess
 import xml.etree.ElementTree as ET
 import urllib.parse
@@ -28,6 +27,7 @@ class IOS:
 
     def update_project_pbx(self):
         # update platforms/ios/Montclair.xcodeproj/project.pbxproj
+        #!mwd - Nothing to do...
         pass
 
     def update_config_xml(self):
@@ -53,7 +53,7 @@ class IOS:
             description.text = self.config.description
             
             content = root.find(f'.//{{{ns}}}content')
-            content.set('src', self.config.url)
+            content.set('src', f'{self.config.url}/index.html')
             
             nav = root.find(f'.//{{{ns}}}allow-navigation')
             nav.set('href', f'{self.config.url}/*')
