@@ -2,6 +2,7 @@
 import sys
 import os
 import io
+import subprocess
 import xml.etree.ElementTree as ET
 import urllib.parse
 import json
@@ -119,10 +120,86 @@ class IOS:
             f.write('\n')
 
     def create_icons(self):
-        pass
+        # app-icon.png 512x512
+        subprocess.run(['convert', self.config.logo_svg,
+                        '-resize', '512x512',
+                        self.base_path('app-icon.png')],
+                       check = True)
+
+        # favicon.ico with multiple resolutions
+        subprocess.run(['convert', self.config.logo_svg,
+                        '-alpha', 'off',
+                        '-resize', '256x256',
+                        '-define', 'icon:auto-resize=256,192,152,144,128,96,72,64,48,32,24,16',
+                        self.base_path('favicon.ico')],
+                       check = True)
+
+        # create a bunch of icons with transparency
+        icons = [
+            ('icon120-1.png', '120x120'),
+            ('icon120.png', '120x120'),
+            ('icon152.png', '152x152'),
+            ('icon167.png', '167x167'),
+            ('icon180.png', '180x180'),
+            ('icon20.png', '20x20'),
+            ('icon29-1.png', '29x29'),
+            ('icon29.png', '29x29'),
+            ('icon40-1.png', '40x40'),
+            ('icon40-2.png', '40x40'),
+            ('icon40.png', '40x40'),
+            ('icon58-1.png', '58x58'),
+            ('icon58.png', '58x58'),
+            ('icon60.png', '60x60'),
+            ('icon76.png', '76x76'),
+            ('icon80-1.png', '80x80'),
+            ('icon80.png', '80x80'),
+            ('icon87.png', '87x87')
+        ]
+
+        for i in icons:
+            subprocess.run(['convert', self.config.logo_svg,
+                            '-resize', i[1],
+                            self.base_path(f'platforms/ios/Montclair/Images.xcassets/AppIcon.appiconset/{i[0]}')],
+                           check = True)
+
+        
+        # create icons without transparency
+        subprocess.run(['convert', self.config.logo_svg,
+                        '-alpha', 'off',
+                        '-resize', '1024x1024',
+                        self.base_path(f'platforms/ios/Montclair/Images.xcassets/AppIcon.appiconset/icon1024-no-transparency.png')],
+                       check = True)
+
 
     def create_splash_screen(self):
-        pass
+        icons = [
+            ('launch_image1024x748.png', '1024x768'),
+            ('launch_image1024x768-1.png', '1024x768'),
+            ('launch_image1024x768.png', '1024x768'),
+            ('launch_image1242x2208.png', '1242x2208'),
+            ('launch_image1536x2008.png', '1536x2008'),
+            ('launch_image1536x2048-1.png', '1536x2048'),
+            ('launch_image1536x2048.png', '1536x2048'),
+            ('launch_image2048x1496.png', '2048x1496'),
+            ('launch_image2048x1536-1.png', '2048x1536'),
+            ('launch_image2048x1536.png', '2048x1536'),
+            ('launch_image2208x1242.png', '2208x1242'),
+            ('launch_image320x480-9.png', '320x240'),
+            ('launch_image640x1136-1.png', '640x1136'),
+            ('launch_image640x1136.png', '640x1136'),
+            ('launch_image640x960-1.png', '640x960'),
+            ('launch_image640x960.png', '640x960'),
+            ('launch_image750x1334.png', '750x1334'),
+            ('launch_image768x1004.png', '768x1004'),
+            ('launch_image768x1024-1.png', '768x1024'),
+            ('launch_image768x1024.png', '768x1024')
+        ]
+        for i in icons:
+            subprocess.run(['convert', self.config.logo_svg,
+                            '-alpha', 'off',
+                            '-resize', i[1],
+                            self.base_path(f'platforms/ios/Montclair/Images.xcassets/LaunchImage.launchimage/{i[0]}')],
+                           check = True)
 
     def base_path(self, fname):
         return os.path.join(self.config.build_dir, f'montclair-{self.config.repo}-pwa-ios', fname)
