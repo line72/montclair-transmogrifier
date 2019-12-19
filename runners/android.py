@@ -139,11 +139,85 @@ class Android:
             f.write('\n')
 
     def create_icons(self):
-        pass
+        # app-icon.png 512x512
+        subprocess.run(['convert',
+                        '-size', '512x512',
+                        'xc:none',
+                        '-fill', 'white',
+                        '-draw', 'roundRectangle 0,0 512,512 50,50',
+                        self.config.logo_svg,
+                        '-resize', '512x512',
+                        '-compose', 'SrcIn',
+                        '-composite',
+                        self.base_path('app-icon.png')],
+                       check = True)
+
+        # favicon.ico with multiple resolutions
+        subprocess.run(['convert',
+                        '-size', '256x256',
+                        'xc:none',
+                        '-fill', 'white',
+                        '-draw', 'roundRectangle 0,0 256,256 50,50',
+                        self.config.logo_svg,
+                        '-resize', '256x256',
+                        '-compose', 'SrcIn',
+                        '-composite',
+                        '-define', 'icon:auto-resize=256,192,152,144,128,96,72,64,48,32,24,16',
+                        self.base_path('favicon.ico')],
+                       check = True)
+
+        icons = [
+            ('drawable-xxxhdpi/icon.png', '192x192'),
+            ('drawable-ldpi/icon.png', '36x36'),
+            ('drawable-xhdpi/icon.png', '96x96'),
+            ('drawable-xxhdpi/icon.png', '144x144'),
+            ('drawable-hdpi/icon.png', '72x72'),
+            ('drawable-mdpi/icon.png', '58x58')
+        ]
+        for i in icons:
+            corners = ','.join(i[1].split('x'))
+            subprocess.run(['convert',
+                            '-size', i[1],
+                            'xc:none',
+                            '-fill', 'white',
+                            '-draw', f'roundRectangle 0,0 {corners} 50,50',
+                            self.config.logo_svg,
+                            '-resize', i[1],
+                            '-compose', 'SrcIn',
+                            '-composite',
+                            self.base_path(f'platforms/android/res/{i[0]}')],
+                           check = True)
     
     def create_splash_screen(self):
-        pass
-    
+        icons = [
+            ('drawable-land-xhdpi/screen.png', '1280x720'),
+            ('drawable-port-ldpi/screen.png', '200x320'),
+            ('drawable-port-mdpi/screen.png', '320x480'),
+            ('drawable-port-hdpi/screen.png', '480x800'),
+            ('drawable-land-mdpi/screen.png', '400x320'),
+            ('drawable-port-xhdpi/screen.png', '720x1280'),
+            ('drawable-land-hdpi/screen.png', '800x480'),
+            ('drawable-land-ldpi/screen.png', '320x200'),
+        ]
+        for i in icons:
+            w, h = [int(x) for x in i[1].split('x')]
+            m = min(w, h)
+
+            # our logo is sqare, so this in the new resolution
+            img = int(m / 4)
+
+            # compute the frame, divide by two, since it is on both sides
+            frame_w = (w - img) / 2
+            frame_h = (h - img) / 2
+            
+            subprocess.run(['convert', self.config.logo_svg,
+                            '-alpha', 'off',
+                            '-resize', f'{img}x{img}',
+                            '-mattecolor', 'White',
+                            '-frame', f'{frame_w}x{frame_h}',
+                            self.base_path(f'platforms/android/res/{i[0]}')],
+                           check = True)
+
     def base_path(self, fname):
         return os.path.join(self.config.build_dir, f'montclair-{self.config.repo}-pwa-android', fname)
 

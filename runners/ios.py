@@ -121,15 +121,28 @@ class IOS:
 
     def create_icons(self):
         # app-icon.png 512x512
-        subprocess.run(['convert', self.config.logo_svg,
+        subprocess.run(['convert',
+                        '-size', '512x512',
+                        'xc:none',
+                        '-fill', 'white',
+                        '-draw', 'roundRectangle 0,0 512,512 50,50',
+                        self.config.logo_svg,
                         '-resize', '512x512',
+                        '-compose', 'SrcIn',
+                        '-composite',
                         self.base_path('app-icon.png')],
                        check = True)
 
         # favicon.ico with multiple resolutions
-        subprocess.run(['convert', self.config.logo_svg,
-                        '-alpha', 'off',
+        subprocess.run(['convert',
+                        '-size', '256x256',
+                        'xc:none',
+                        '-fill', 'white',
+                        '-draw', 'roundRectangle 0,0 256,256 50,50',
+                        self.config.logo_svg,
                         '-resize', '256x256',
+                        '-compose', 'SrcIn',
+                        '-composite',
                         '-define', 'icon:auto-resize=256,192,152,144,128,96,72,64,48,32,24,16',
                         self.base_path('favicon.ico')],
                        check = True)
@@ -195,9 +208,21 @@ class IOS:
             ('launch_image768x1024.png', '768x1024')
         ]
         for i in icons:
+            w, h = [int(x) for x in i[1].split('x')]
+            m = min(w, h)
+
+            # our logo is sqare, so this in the new resolution
+            img = int(m / 4)
+
+            # compute the frame, divide by two, since it is on both sides
+            frame_w = (w - img) / 2
+            frame_h = (h - img) / 2
+            
             subprocess.run(['convert', self.config.logo_svg,
                             '-alpha', 'off',
-                            '-resize', i[1],
+                            '-resize', f'{img}x{img}',
+                            '-mattecolor', 'White',
+                            '-frame', f'{frame_w}x{frame_h}',
                             self.base_path(f'platforms/ios/Montclair/Images.xcassets/LaunchImage.launchimage/{i[0]}')],
                            check = True)
 

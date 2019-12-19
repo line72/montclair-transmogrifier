@@ -3,12 +3,14 @@ import argparse
 
 from transmogrifier.runners.web import Web
 from transmogrifier.runners.ios import IOS
+from transmogrifier.runners.android import Android
 
 class Runner:
     def __init__(self, config):
         self.config = config
         self.web = Web(config)
         self.ios = IOS(config)
+        self.android = Android(config)
 
     def go(self):
         self.parse_args()
@@ -16,8 +18,8 @@ class Runner:
         print('running')
         self.web.go()
         self.ios.go()
+        self.android.go()
         
-
     def parse_args(self):
         parser = argparse.ArgumentParser()
         parser.add_argument('-e', '--env', action = 'store_true',

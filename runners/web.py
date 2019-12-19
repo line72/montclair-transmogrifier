@@ -130,15 +130,28 @@ class Web:
 
     def update_icons(self):
         # convert the logo.svg into a 512x512 png
-        subprocess.run(['convert', self.config.logo_svg,
+        subprocess.run(['convert',
+                        '-size', '512x512',
+                        'xc:none',
+                        '-fill', 'white',
+                        '-draw', 'roundRectangle 0,0 512,512 50,50',
+                        self.config.logo_svg,
                         '-resize', '512x512',
+                        '-compose', 'SrcIn',
+                        '-composite',
                         self.base_path('public/app-icon.png')],
                        check = True)
 
         # convert the logo.svg into a favicon.ico with multiple resolutions
-        subprocess.run(['convert', self.config.logo_svg,
-                        '-alpha', 'off',
+        subprocess.run(['convert',
+                        '-size', '256x256',
+                        'xc:none',
+                        '-fill', 'white',
+                        '-draw', 'roundRectangle 0,0 256,256 50,50',
+                        self.config.logo_svg,
                         '-resize', '256x256',
+                        '-compose', 'SrcIn',
+                        '-composite',
                         '-define', 'icon:auto-resize=256,192,152,144,128,96,72,64,48,32,24,16',
                         self.base_path('public/favicon.ico')],
                        check = True)
