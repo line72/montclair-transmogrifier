@@ -156,6 +156,27 @@ class Web:
                         self.base_path('public/favicon.ico')],
                        check = True)
 
+        # create all the different app-icons
+        icons = (
+            ('apple-icon', (57, 60, 72, 76, 144, 120, 144, 152, 180, 192)),
+            ('android-icon', (192,)),
+            ('favicon', (16, 32, 96)),
+            ('ms-icon', (144,))
+        )
+        for (i, sizes) in icons:
+            for size in sizes:
+                subprocess.run(['convert',
+                                '-size', f'{size}x{size}',
+                                'xc:none',
+                                '-fill', 'white',
+                                '-draw', 'roundRectangle 0,0 {size},{size} 50,50',
+                                self.config.logo_svg,
+                                '-resize', '{size}x{size}',
+                                '-compose', 'SrcIn',
+                                '-composite',
+                                self.base_path(f'public/{i}-{size}x{size}.png')],
+                               check = True)
+
     def base_path(self, fname):
         return os.path.join(self.config.build_dir, f'montclair-{self.config.repo}', fname)
 
