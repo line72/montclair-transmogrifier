@@ -175,10 +175,10 @@ class Android:
             ('drawable-mdpi/icon.png', '58x58')
         ]
         for i in icons:
-            corners = ','.join(i[1].split('x'))
+            c = i[1].split('x')
+            corners = ','.join(c)
             corner_ratio = 50 / 512
-            corner_size = int(int(corners[0]) * corner_ratio)
-            print('corner_size', corner_size)
+            corner_size = int(int(c[0]) * corner_ratio)
             subprocess.run(['convert',
                             '-size', i[1],
                             'xc:none',
