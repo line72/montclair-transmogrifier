@@ -138,7 +138,7 @@ class IOS:
                         '-size', '256x256',
                         'xc:none',
                         '-fill', 'white',
-                        '-draw', 'roundRectangle 0,0 256,256 50,50',
+                        '-draw', 'roundRectangle 0,0 256,256 25,25',
                         self.config.logo_svg,
                         '-resize', '256x256',
                         '-compose', 'SrcIn',

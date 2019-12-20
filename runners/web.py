@@ -147,7 +147,7 @@ class Web:
                         '-size', '256x256',
                         'xc:none',
                         '-fill', 'white',
-                        '-draw', 'roundRectangle 0,0 256,256 50,50',
+                        '-draw', 'roundRectangle 0,0 256,256 25,25',
                         self.config.logo_svg,
                         '-resize', '256x256',
                         '-compose', 'SrcIn',
@@ -158,7 +158,7 @@ class Web:
 
         # create all the different app-icons
         icons = (
-            ('apple-icon', True, (57, 60, 72, 76, 114, 120, 144, 152, 180, 192)),
+            ('apple-icon', False, (57, 60, 72, 76, 114, 120, 144, 152, 180, 192)),
             ('android-icon', True, (192,)),
             ('favicon', True, (16, 32, 96)),
             ('ms-icon', True, (144,))

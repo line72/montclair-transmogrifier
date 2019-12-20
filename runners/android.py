@@ -157,7 +157,7 @@ class Android:
                         '-size', '256x256',
                         'xc:none',
                         '-fill', 'white',
-                        '-draw', 'roundRectangle 0,0 256,256 50,50',
+                        '-draw', 'roundRectangle 0,0 256,256 25,25',
                         self.config.logo_svg,
                         '-resize', '256x256',
                         '-compose', 'SrcIn',
@@ -176,11 +176,13 @@ class Android:
         ]
         for i in icons:
             corners = ','.join(i[1].split('x'))
+            corner_ratio = 50 / 512
+            corner_size = int(int(corners[0]) * corner_ratio)
             subprocess.run(['convert',
                             '-size', i[1],
                             'xc:none',
                             '-fill', 'white',
-                            '-draw', f'roundRectangle 0,0 {corners} 50,50',
+                            '-draw', f'roundRectangle 0,0 {corners} {corner_size},{corner_size}',
                             self.config.logo_svg,
                             '-resize', i[1],
                             '-compose', 'SrcIn',
