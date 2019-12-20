@@ -172,7 +172,7 @@ class Web:
                                     '-size', f'{size}x{size}',
                                     'xc:none',
                                     '-fill', 'white',
-                                    '-draw', f'roundRectangle 0,0 {corner_size},{corner_size} 50,50',
+                                    '-draw', f'roundRectangle 0,0 {size},{size} {corner_size},{corner_size}',
                                     self.config.logo_svg,
                                     '-resize', f'{size}x{size}',
                                     '-compose', 'SrcIn',
