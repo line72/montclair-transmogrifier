@@ -178,6 +178,7 @@ class Android:
             corners = ','.join(i[1].split('x'))
             corner_ratio = 50 / 512
             corner_size = int(int(corners[0]) * corner_ratio)
+            print('corner_size', corner_size)
             subprocess.run(['convert',
                             '-size', i[1],
                             'xc:none',
