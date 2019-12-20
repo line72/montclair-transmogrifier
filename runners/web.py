@@ -147,7 +147,7 @@ class Web:
                         '-size', '256x256',
                         'xc:none',
                         '-fill', 'white',
-                        '-draw', 'roundRectangle 0,0 256,256 50,50',
+                        '-draw', 'roundRectangle 0,0 256,256 25,25',
                         self.config.logo_svg,
                         '-resize', '256x256',
                         '-compose', 'SrcIn',
@@ -155,6 +155,36 @@ class Web:
                         '-define', 'icon:auto-resize=256,192,152,144,128,96,72,64,48,32,24,16',
                         self.base_path('public/favicon.ico')],
                        check = True)
+
+        # create all the different app-icons
+        icons = (
+            ('apple-icon', False, (57, 60, 72, 76, 114, 120, 144, 152, 180, 192)),
+            ('android-icon', True, (192,)),
+            ('favicon', True, (16, 32, 96)),
+            ('ms-icon', True, (144,))
+        )
+        for (i, rounded_corners, sizes) in icons:
+            for size in sizes:
+                if rounded_corners:
+                    corner_ratio = 50 / 512
+                    corner_size = int(size * corner_ratio)
+                    subprocess.run(['convert',
+                                    '-size', f'{size}x{size}',
+                                    'xc:none',
+                                    '-fill', 'white',
+                                    '-draw', f'roundRectangle 0,0 {size},{size} {corner_size},{corner_size}',
+                                    self.config.logo_svg,
+                                    '-resize', f'{size}x{size}',
+                                    '-compose', 'SrcIn',
+                                    '-composite',
+                                    self.base_path(f'public/{i}-{size}x{size}.png')],
+                                   check = True)
+                else:
+                    subprocess.run(['convert',
+                                    self.config.logo_svg,
+                                    '-resize', f'{size}x{size}',
+                                    self.base_path(f'public/{i}-{size}x{size}.png')],
+                                   check = True)
 
     def base_path(self, fname):
         return os.path.join(self.config.build_dir, f'montclair-{self.config.repo}', fname)
