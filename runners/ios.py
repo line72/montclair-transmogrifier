@@ -16,6 +16,8 @@ class IOS:
             return
 
         self.update_project_pbx()
+        self.update_xcscheme()
+        self.update_package_json()
         self.update_config_xml()
         self.update_plist()
         self.update_manifest()
@@ -29,6 +31,28 @@ class IOS:
         # update platforms/ios/Montclair.xcodeproj/project.pbxproj
         #!mwd - Nothing to do...
         pass
+
+    def update_xcscheme(self):
+        pass
+    
+    def update_package_json(self):
+        # update the package.json and the package-lock.json
+        package = json.loads(self.oread('package.json'))
+        # replace the name
+        package['name'] = self.config.package_name
+        package['displayName'] = self.config.name
+        
+        with self.o('package.json', 'w') as f:
+            f.write(json.dumps(package, indent = 2))
+            f.write('\n')
+
+        package_lock = json.loads(self.oread('package-lock.json'))
+        # replace the name
+        package_lock['name'] = self.config.package_name
+        
+        with self.o('package-lock.json', 'w') as f:
+            f.write(json.dumps(package_lock, indent = 2))
+            f.write('\n')
 
     def update_config_xml(self):
         # update config.xml and platforms/ios/Montclair/config.xml
@@ -56,7 +80,8 @@ class IOS:
             content.set('src', f'{self.config.url}/index.html')
             
             nav = root.find(f'.//{{{ns}}}allow-navigation')
-            nav.set('href', f'{self.config.url}/*')
+            if nav:
+                nav.set('href', f'{self.config.url}/*')
             
             # write back out
             tree.write(self.base_path(i),
@@ -73,6 +98,8 @@ class IOS:
             'net.line72.montclair', self.config.ios_config.app_id
         ).replace(
             'montclair.line72.net', url
+        ).replace(
+            '<string>Montclair</string>', f'<string>{self.config.name}</string>'
         )
 
         with self.o('platforms/ios/Montclair/Montclair-Info.plist', 'w') as f:
@@ -113,11 +140,12 @@ class IOS:
 
     def update_generation_info(self):
         # Update generationInfo.json
-        g = json.loads(self.oread('generationInfo.json'))
-        g['generatedURL'] = f'{self.config.url}/manifest.json'
-        with self.o('generationInfo.json', 'w') as f:
-            f.write(json.dumps(g, indent = 4))
-            f.write('\n')
+        for i in ('generationInfo.json', 'platforms/ios/generationInfo.json'):
+            g = json.loads(self.oread(i))
+            g['generatedURL'] = f'{self.config.url}/manifest.json'
+            with self.o(i, 'w') as f:
+                f.write(json.dumps(g, indent = 4))
+                f.write('\n')
 
     def create_icons(self):
         # app-icon.png 512x512
@@ -149,6 +177,9 @@ class IOS:
 
         # create a bunch of icons with transparency
         icons = [
+            ('AppIcon29x29@2x.png', '58x58'),
+            ('AppIcon40x40@2x.png', '80x80'),
+            ('icon.png', '57x57'),
             ('icon120-1.png', '120x120'),
             ('icon120.png', '120x120'),
             ('icon152.png', '152x152'),
@@ -166,7 +197,25 @@ class IOS:
             ('icon76.png', '76x76'),
             ('icon80-1.png', '80x80'),
             ('icon80.png', '80x80'),
-            ('icon87.png', '87x87')
+            ('icon87.png', '87x87'),
+            ('icon-20@2x.png', '40x40'),
+            ('icon-20@3x.png', '60x60'),
+            ('icon-40.png', '40x40'),
+            ('icon-40@2x.png', '80x80'),
+            ('icon-50.png', '50x50'),
+            ('icon-50@2x.png', '100x100'),
+            ('icon-60@2x.png', '120x120'),
+            ('icon-60@3x.png', '180x180'),
+            ('icon-72.png', '72x72'),
+            ('icon-72@2x.png', '144x144'),
+            ('icon-76.png', '76x76'),
+            ('icon-76@2x.png', '152x152'),
+            ('icon-83.5@2x.png', '167x167'),
+            ('icon@2x.png', '114x114'),
+            ('icon-small.png', '29x29'),
+            ('icon-small@2x.png', '58x58'),
+            ('icon-small@3x.png', '87x87')
+            
         ]
 
         for i in icons:
@@ -186,6 +235,16 @@ class IOS:
 
     def create_splash_screen(self):
         icons = [
+            ('Default-568h@2x~iphone.png', '640x1136'),
+            ('Default-667h.png', '750x1134'),
+            ('Default-736h.png', '1242x2208'),
+            ('Default@2x~iphone.png', '640x960'),
+            ('Default~iphone.png', '320x480'),
+            ('Default-Landscape-736h.png', '2208x1242'),
+            ('Default-Landscape@2x~ipad.png', '2048x1536'),
+            ('Default-Landscape~ipad.png', '1024x768'),
+            ('Default-Portrait@2x~ipad.png', '1536x2048'),
+            ('Default-Portrait~ipad.png', '768x1024'),
             ('launch_image1024x748.png', '1024x768'),
             ('launch_image1024x768-1.png', '1024x768'),
             ('launch_image1024x768.png', '1024x768'),
@@ -197,7 +256,7 @@ class IOS:
             ('launch_image2048x1536-1.png', '2048x1536'),
             ('launch_image2048x1536.png', '2048x1536'),
             ('launch_image2208x1242.png', '2208x1242'),
-            ('launch_image320x480-9.png', '320x240'),
+            ('launch_image320x480-9.png', '320x480'),
             ('launch_image640x1136-1.png', '640x1136'),
             ('launch_image640x1136.png', '640x1136'),
             ('launch_image640x960-1.png', '640x960'),
