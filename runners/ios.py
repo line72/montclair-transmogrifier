@@ -80,7 +80,7 @@ class IOS:
             content.set('src', f'{self.config.url}/index.html')
             
             nav = root.find(f'.//{{{ns}}}allow-navigation')
-            if nav:
+            if nav != None:
                 nav.set('href', f'{self.config.url}/*')
             
             # write back out
