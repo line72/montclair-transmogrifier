@@ -198,6 +198,7 @@ class IOS:
             ('icon80-1.png', '80x80'),
             ('icon80.png', '80x80'),
             ('icon87.png', '87x87'),
+            ('icon-20.png', '20x20'),
             ('icon-20@2x.png', '40x40'),
             ('icon-20@3x.png', '60x60'),
             ('icon-40.png', '40x40'),
@@ -214,8 +215,8 @@ class IOS:
             ('icon@2x.png', '114x114'),
             ('icon-small.png', '29x29'),
             ('icon-small@2x.png', '58x58'),
-            ('icon-small@3x.png', '87x87')
-            
+            ('icon-small@3x.png', '87x87'),
+            ('icon-1024.png', '1024x1024')
         ]
 
         for i in icons:
@@ -245,6 +246,8 @@ class IOS:
             ('Default-Landscape~ipad.png', '1024x768'),
             ('Default-Portrait@2x~ipad.png', '1536x2048'),
             ('Default-Portrait~ipad.png', '768x1024'),
+            ('Default-2436h.png', '1125x2436'),
+            ('Default-Landscape-2436h.png', '2436x1125'),
             ('launch_image1024x748.png', '1024x768'),
             ('launch_image1024x768-1.png', '1024x768'),
             ('launch_image1024x768.png', '1024x768'),
