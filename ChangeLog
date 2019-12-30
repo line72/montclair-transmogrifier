@@ -1,16 +1,19 @@
+2019-12-30  Marcus Dillavou  <line72@line72.net>
+	* Correctly update the version in the Android Manifest
+
 0.9.4
 ==========
-2019-12-29  Marcus Dillavou  <marcus.dillavou@helplightning.com>
+2019-12-29  Marcus Dillavou  <line72@line72.net>
 	* Updated icons and launch images for iphonex
 
 0.9.3
 ==========
-2019-12-29  Marcus Dillavou  <marcus.dillavou@helplightning.com>
+2019-12-29  Marcus Dillavou  <line72@line72.net>
 	* Fixed issue in iOS parsing the config.xml
 
 0.9.2
 ==========
-2019-12-29  Marcus Dillavou  <marcus.dillavou@helplightning.com>
+2019-12-29  Marcus Dillavou  <line72@line72.net>
 	* Updated the iOS runner for the new project
 
 0.9.1

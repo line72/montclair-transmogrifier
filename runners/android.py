@@ -103,11 +103,21 @@ class Android:
 
     def update_android_manifest(self):
         # Update ./platforms/android/AndroidManifest.xml
-        m = self.oread('platforms/android/AndroidManifest.xml')
-        m = m.replace('net.line72.montclair', self.config.android_config.app_id)
+        p = 'platforms/android/AndroidManifest.xml'
 
-        with self.o('platforms/android/AndroidManifest.xml', 'w') as f:
-            f.write(m)
+        tree = ET.parse(self.base_path(p))
+        root = tree.getroot()
+
+        ns = 'http://schemas.android.com/apk/res/android'
+        ET.register_namespace('android', ns)
+
+        root.set(f'{{{ns}}}versionName', f'{self.config.android_config.version}-{self.config.android_config.revision}')
+        root.set('package', self.config.android_config.app_id)
+
+        # write back out
+        tree.write(self.base_path(p),
+                   encoding='utf-8', xml_declaration = True,
+                   default_namespace = '')
 
     def update_package_name(self):
         # Update the package net.line72.net.montclair in all the java files
