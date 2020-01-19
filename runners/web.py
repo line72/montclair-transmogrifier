@@ -85,6 +85,8 @@ class Web:
                         raise Exception('Runner.Web: Unable to match apple-itunes-app in public/index.html')
                 elif '<title>Montclair</title>' in line:
                     f.write(line.replace('Montclair', self.config.montclair_config.title or self.config.name))
+                elif '<meta name="description" content="Birmingham, AL Real Time Bus Tracker">' in line:
+                    f.write(line.replace('Birmingham, AL Real Time Bus Tracker', self.config.description))
                 else:
                     f.write(line)
 
