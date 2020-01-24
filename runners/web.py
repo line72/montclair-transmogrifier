@@ -17,7 +17,7 @@ class Web:
         self.update_index()
         self.update_first_run()
         self.update_agency_list()
-        self.update_route_container()
+        self.update_explore_container()
         self.update_config()
         self.update_icons()
 
@@ -115,11 +115,11 @@ class Web:
                 else:
                     f.write(line)
 
-    def update_route_container(self):
-        # Update src/RouteContainer.js and replace Birmingham Transit header
-        route = self.oreadlines('src/RouteContainer.js')
+    def update_explore_container(self):
+        # Update src/ExploreContainer.js and replace Birmingham Transit header
+        route = self.oreadlines('src/ExploreContainer.js')
 
-        with self.o('src/RouteContainer.js', 'w') as f:
+        with self.o('src/ExploreContainer.js', 'w') as f:
             for line in route:
                 if 'Birmingham Transit' in line:
                     f.write(line.replace('Birmingham Transit', self.config.montclair_config.title or self.config.name))
