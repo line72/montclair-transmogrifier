@@ -24,7 +24,6 @@ class Android:
         self.update_package_name()
         self.update_generation_info()
         self.create_icons()
-        self.create_splash_screen()
 
     def update_android_json(self):
         # Update platforms/android/android.json and plugins/android.json
@@ -176,37 +175,26 @@ class Android:
                         self.base_path('favicon.ico')],
                        check = True)
 
-        # make drawable dirs
-        drawable_dirs = [
-            'drawable-xxxhdpi',
-            'drawable-ldpi',
-            'drawable-xhdpi',
-            'drawable-xxhdpi',
-            'drawable-hdpi',
-            'drawable-mdpi',
-            'drawable-land-xhdpi',
-            'drawable-port-ldpi',
-            'drawable-port-mdpi',
-            'drawable-port-hdpi',
-            'drawable-land-mdpi',
-            'drawable-port-xhdpi',
-            'drawable-land-hdpi',
-            'drawable-land-ldpi'
-        ]
-        for d in drawable_dirs:
-            p = os.path.join(self.base_path('platforms'),
-                             'android', 'app', 'src',
-                             'main', 'res', d)
-            try: os.makedirs(p)
-            except OSError: pass
         
         icons = [
-            ('drawable-xxxhdpi/icon.png', '192x192'),
-            ('drawable-ldpi/icon.png', '36x36'),
-            ('drawable-xhdpi/icon.png', '96x96'),
-            ('drawable-xxhdpi/icon.png', '144x144'),
-            ('drawable-hdpi/icon.png', '72x72'),
-            ('drawable-mdpi/icon.png', '58x58')
+            ('mipmap-xxxhdpi/ic_launcher.png', '192x192'),
+            ('mipmap-xxxhdpi-v26/ic_launcher_monochrome.png', '432x432'),
+            ('mipmap-xxxhdpi-v26/ic_launcher_foreground.png', '432x432'),
+            ('mipmap-xxhdpi/ic_launcher.png', '144x144'),
+            ('mipmap-xxhdpi-v26/ic_launcher_monochrome.png', '324x324'),
+            ('mipmap-xxhdpi-v26/ic_launcher_foreground.png', '324x324'),
+            ('mipmap-xhdpi/ic_launcher.png', '96x96'),
+            ('mipmap-xhdpi-v26/ic_launcher_monochrome.png', '216x216'),
+            ('mipmap-xhdpi-v26/ic_launcher_foreground.png', '216x216'),
+            ('mipmap-hdpi/ic_launcher.png', '72x72'),
+            ('mipmap-hdpi-v26/ic_launcher_monochrome.png', '163x163'),
+            ('mipmap-hdpi-v26/ic_launcher_foreground.png', '163x163'),
+            ('mipmap-mdpi/ic_launcher.png', '48x48'),
+            ('mipmap-mdpi-v26/ic_launcher_monochrome.png', '108x108'),
+            ('mipmap-mdpi-v26/ic_launcher_foreground.png', '108x108'),
+            ('mipmap-ldpi/ic_launcher.png', '36x36')
+            ('mipmap-ldpi-v26/ic_launcher_monochrome.png', '36x36'),
+            ('mipmap-ldpi-v26/ic_launcher_foreground.png', '36x36'),
         ]
         for i in icons:
             c = i[1].split('x')
@@ -225,36 +213,6 @@ class Android:
                             self.base_path(f'platforms/android/app/src/main/res/{i[0]}')],
                            check = True)
     
-    def create_splash_screen(self):
-        icons = [
-            ('drawable-land-xhdpi/screen.png', '1280x720'),
-            ('drawable-port-ldpi/screen.png', '200x320'),
-            ('drawable-port-mdpi/screen.png', '320x480'),
-            ('drawable-port-hdpi/screen.png', '480x800'),
-            ('drawable-land-mdpi/screen.png', '400x320'),
-            ('drawable-port-xhdpi/screen.png', '720x1280'),
-            ('drawable-land-hdpi/screen.png', '800x480'),
-            ('drawable-land-ldpi/screen.png', '320x200'),
-        ]
-        for i in icons:
-            w, h = [int(x) for x in i[1].split('x')]
-            m = min(w, h)
-
-            # our logo is sqare, so this in the new resolution
-            img = int(m / 4)
-
-            # compute the frame, divide by two, since it is on both sides
-            frame_w = (w - img) / 2
-            frame_h = (h - img) / 2
-            
-            subprocess.run(['convert', self.config.logo_svg,
-                            '-alpha', 'off',
-                            '-resize', f'{img}x{img}',
-                            '-mattecolor', 'White',
-                            '-frame', f'{frame_w}x{frame_h}',
-                            self.base_path(f'platforms/android/app/src/main/res/{i[0]}')],
-                           check = True)
-
     def base_path(self, fname):
         return os.path.join(self.config.build_dir, f'montclair-{self.config.repo}-pwa-android', fname)
 
