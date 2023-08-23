@@ -37,7 +37,7 @@ class Android:
 
     def update_config_xml(self):
         # Updates platforms/android/res/xml/config.xml and config.xml
-        for i in ('config.xml', 'platforms/android/res/xml/config.xml'):
+        for i in ('config.xml', 'platforms/android/app/src/main/res/xml/config.xml'):
             tree = ET.parse(self.base_path(i))
             root = tree.getroot()
         
@@ -70,7 +70,7 @@ class Android:
 
     def update_strings_xml(self):
         # Update platforms/android/res/values/strings.xml
-        p = 'platforms/android/res/values/strings.xml'
+        p = 'platforms/android/app/src/main/res/values/strings.xml'
         
         tree = ET.parse(self.base_path(p))
         root = tree.getroot()
@@ -85,7 +85,7 @@ class Android:
 
     def update_manifest_json(self):
         # Update ./platforms/android/assets/www/manifest.json, www/manifest.json, and manifest.json
-        for i in ('manifest.json', 'www/manifest.json', 'platforms/android/assets/www/manifest.json'):
+        for i in ('manifest.json', 'www/manifest.json', 'platforms/android/app/src/main/assets/www/manifest.json'):
             m = json.loads(self.oread(i))
             m['short_name'] = self.config.name
             m['name'] = self.config.name
@@ -103,7 +103,7 @@ class Android:
 
     def update_android_manifest(self):
         # Update ./platforms/android/AndroidManifest.xml
-        p = 'platforms/android/AndroidManifest.xml'
+        p = 'platforms/android/app/src/main/AndroidManifest.xml'
 
         tree = ET.parse(self.base_path(p))
         root = tree.getroot()
@@ -121,7 +121,7 @@ class Android:
 
     def update_package_name(self):
         # Update the package net.line72.net.montclair in all the java files
-        src_dir = os.path.join('platforms', 'android', 'src')
+        src_dir = os.path.join('platforms', 'android', 'app', 'src', 'main', 'java')
 
         # First make the new directory based on the package name
         package_path = os.path.join(*self.config.android_config.app_id.split('.'))
@@ -132,7 +132,7 @@ class Android:
         os.rename(os.path.join(old_path, 'MainActivity.java'), os.path.join(full_path, 'MainActivity.java'))
     
         # Then update the package name in:
-        # ./platforms/android/src/net/line72/NEW_PACKAGE_NAME/MainActivity.java
+        # ./platforms/android/src/main/java/net/line72/NEW_PACKAGE_NAME/MainActivity.java
         fname = os.path.join(src_dir, package_path, 'MainActivity.java')
         j = self.oread(fname)
 
@@ -176,6 +176,30 @@ class Android:
                         self.base_path('favicon.ico')],
                        check = True)
 
+        # make drawable dirs
+        drawable_dirs = [
+            'drawable-xxxhdpi',
+            'drawable-ldpi',
+            'drawable-xhdpi',
+            'drawable-xxhdpi',
+            'drawable-hdpi',
+            'drawable-mdpi'
+            'drawable-land-xhdpi',
+            'drawable-port-ldpi',
+            'drawable-port-mdpi',
+            'drawable-port-hdpi',
+            'drawable-land-mdpi',
+            'drawable-port-xhdpi',
+            'drawable-land-hdpi',
+            'drawable-land-ldpi'
+        ]
+        for d in drawable_dirs:
+            p = os.path.join(self.base_path('platforms'),
+                             'android', 'app', 'src',
+                             'main', 'res', d)
+            try: os.makedirs(p)
+            except OSError: pass
+        
         icons = [
             ('drawable-xxxhdpi/icon.png', '192x192'),
             ('drawable-ldpi/icon.png', '36x36'),
@@ -198,7 +222,7 @@ class Android:
                             '-resize', i[1],
                             '-compose', 'SrcIn',
                             '-composite',
-                            self.base_path(f'platforms/android/res/{i[0]}')],
+                            self.base_path(f'platforms/android/app/src/main/res/{i[0]}')],
                            check = True)
     
     def create_splash_screen(self):
@@ -228,7 +252,7 @@ class Android:
                             '-resize', f'{img}x{img}',
                             '-mattecolor', 'White',
                             '-frame', f'{frame_w}x{frame_h}',
-                            self.base_path(f'platforms/android/res/{i[0]}')],
+                            self.base_path(f'platforms/android/app/src/main/res/{i[0]}')],
                            check = True)
 
     def base_path(self, fname):
