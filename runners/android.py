@@ -183,7 +183,7 @@ class Android:
             'drawable-xhdpi',
             'drawable-xxhdpi',
             'drawable-hdpi',
-            'drawable-mdpi'
+            'drawable-mdpi',
             'drawable-land-xhdpi',
             'drawable-port-ldpi',
             'drawable-port-mdpi',
