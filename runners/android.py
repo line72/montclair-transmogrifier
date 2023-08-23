@@ -192,9 +192,9 @@ class Android:
             ('mipmap-mdpi/ic_launcher.png', '48x48'),
             ('mipmap-mdpi-v26/ic_launcher_monochrome.png', '108x108'),
             ('mipmap-mdpi-v26/ic_launcher_foreground.png', '108x108'),
-            ('mipmap-ldpi/ic_launcher.png', '36x36')
+            ('mipmap-ldpi/ic_launcher.png', '36x36'),
             ('mipmap-ldpi-v26/ic_launcher_monochrome.png', '36x36'),
-            ('mipmap-ldpi-v26/ic_launcher_foreground.png', '36x36'),
+            ('mipmap-ldpi-v26/ic_launcher_foreground.png', '36x36')
         ]
         for i in icons:
             c = i[1].split('x')
