@@ -48,7 +48,7 @@ class Android:
             
             # update the root id and version
             root.set('id', self.config.android_config.app_id)
-            root.set('version', self.config.montclair_config.version)
+            root.set('version', self.config.android_config.version)
             # find the name, description, and content nodes, allow-navigation and update them
             name = root.find(f'.//{{{ns}}}name')
             name.text = self.config.name
